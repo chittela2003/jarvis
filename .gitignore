@@ -3,3 +3,8 @@ __pycache__/
 notes/
 .env
 memory.json
+voiceprint.npy
+models/
+voice_samples/
+voiceprint_old.npy
+jarvis.log
