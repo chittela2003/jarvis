@@ -23,6 +23,7 @@ MODEL = "claude-opus-5-5"
 
 mic = None  # NEW: the microphone, opened at the bottom of the file
 wake_audio = np.zeros(0, dtype=np.int16)  # NEW: the sound of your last "Hey Jarvis"
+asleep = False  # NEW: True after 3 claps
 
 
 # Jarvis's voice. "say" is the Mac's built-in text-to-speech command.
@@ -341,6 +342,8 @@ RATE = 16000  # sound samples per second
 CHUNK = 1280  # 80 milliseconds of sound at a time
 WAKE_THRESHOLD = 0.25  # how sure the wake-word model must be (0 to 1). Lower = triggers more easily
 VOICE_MATCH = 0.5  # how similar a voice must be to yours (0 to 1). Higher = stricter
+CLAP_LEVEL = 6000  # NEW: how loud a clap must be (the loudest possible sound is 32767)
+FRAME = 160  # NEW: 10 milliseconds of sound, for timing claps
 VOICEPRINT_FILE = Path(__file__).parent / "voiceprint.npy"  # made by enroll_voice.py
 SPEAKER_MODEL = Path(__file__).parent / "models" / "speaker.onnx"
 
@@ -367,13 +370,60 @@ def voice_embedding(audio: np.ndarray) -> np.ndarray:
     return vector / np.linalg.norm(vector)
 
 
+class ClapCounter:
+    """NEW: counts quick claps: very loud sounds that start suddenly and die away within about 60 ms."""
+
+    def __init__(self, level: float):
+        self.level = level  # how loud a clap must be
+        self.peaks = []  # loudness of each 10 ms slice, most recent last
+        self.claps = []  # times (in slices) when claps happened
+        self.now = 0
+
+    def feed(self, audio: np.ndarray) -> int:
+        """Give it 80 ms of sound. Returns how many claps were in a row once a clap sequence ends, else 0."""
+        self.peaks += list(np.abs(audio.astype(np.int32)).reshape(-1, FRAME).max(axis=1))
+        self.peaks = self.peaks[-40:]
+        # Look at slices old enough that we know what came after them (10 slices = 100 ms)
+        for i in range(len(self.peaks) - 18, len(self.peaks) - 10):
+            if i < 2:
+                continue
+            t = self.now - (len(self.peaks) - i)
+            p = self.peaks[i]
+            sudden = p > self.level and max(self.peaks[i - 2:i]) < p / 4
+            short = max(self.peaks[i + 6:i + 10]) < p / 4  # quiet again 60-100 ms later
+            if sudden and short and (not self.claps or t - self.claps[-1] > 12):
+                self.claps.append(t)
+        self.now += len(audio) // FRAME
+        if self.claps and self.now - self.claps[-1] > 120:  # nothing for 1.2 s: the sequence is over
+            count = len(self.claps)
+            self.claps = []
+            return count
+        if self.claps and self.claps[-1] - self.claps[0] > 300:  # too spread out to be one sequence
+            self.claps = self.claps[-1:]
+        return 0
+
+
 def wait_for_wake_word() -> None:
-    global wake_audio
+    global wake_audio, asleep
     wake.reset()
     recent = []
     almost = 0.0
     while True:
         audio, _ = mic.read(CHUNK)
+        # NEW: 2 claps = wake up and listen, 3 claps = stop listening until the next 2 claps
+        claps = clap_counter.feed(audio[:, 0])
+        if claps:
+            print(f"  (heard {claps} claps)")
+        if claps == 3 and not asleep:
+            asleep = True
+            announce("Okay, I've stopped. Clap twice when you need me.")
+            continue
+        if claps == 2:
+            asleep = False
+            wake_audio = np.zeros(0, dtype=np.int16)  # no voice in a clap, so only the command is voice-checked
+            return
+        if asleep:
+            continue
         recent = (recent + [audio[:, 0].copy()])[-20:]  # keep the last 1.6 seconds
         score = wake.predict(audio[:, 0])["hey_jarvis"]
         if score > 0.05:
@@ -412,7 +462,9 @@ def hear_command() -> str:
     sample = np.concatenate([wake_audio, audio])  # "Hey Jarvis" + the command
     # NEW: your voiceprint was made from "Hey Jarvis" clips, so also compare the "Hey Jarvis" part
     # on its own, and use whichever matches better
-    match = max(float(voice_embedding(sample) @ voiceprint), float(voice_embedding(wake_audio) @ voiceprint))
+    match = float(voice_embedding(sample) @ voiceprint)
+    if len(wake_audio) > RATE // 2:  # skipped after claps, when there is no "Hey Jarvis"
+        match = max(match, float(voice_embedding(wake_audio) @ voiceprint))
     if match < VOICE_MATCH:
         print(f"  (ignored: voice match {match:.0%}, needs {VOICE_MATCH:.0%})")
         problem("Sorry, I didn't recognise your voice.")  # NEW
@@ -478,6 +530,7 @@ if __name__ == "__main__":
     speaker = sherpa_onnx.SpeakerEmbeddingExtractor(  # NEW
         sherpa_onnx.SpeakerEmbeddingExtractorConfig(model=str(SPEAKER_MODEL), num_threads=2))
     voiceprint = np.load(VOICEPRINT_FILE)  # NEW: your voice, saved by enroll_voice.py
+    clap_counter = ClapCounter(CLAP_LEVEL)  # NEW
     history = []
 
     # NEW: keep the microphone open all the time
@@ -488,7 +541,7 @@ if __name__ == "__main__":
     if np.abs(background).max() == 0:  # NEW: total silence means macOS is blocking the microphone
         print("WARNING: the microphone is sending complete silence. Jarvis probably has no microphone permission.")
         problem("I can't hear anything. My microphone might be blocked.")
-    print('Jarvis is listening. Say "Hey Jarvis" any time.')
+    print('Jarvis is listening. Say "Hey Jarvis" or clap twice any time. Clap 3 times to make it stop.')
     announce("I'm ready for your command.")  # NEW
 
     # NEW: when Jarvis is stopped (Ctrl+C, or the Mac shutting down), say goodbye first
