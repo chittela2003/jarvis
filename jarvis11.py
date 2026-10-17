@@ -513,7 +513,9 @@ TOOLS = [
 REQUEST_OPTIONS = dict(
     model=MODEL,
     max_tokens=16000,
-    system=SYSTEM,
+    # NEW: a cache marker right after the instructions, so the ~8,700 tokens of tools + instructions
+    # are cached between commands and sessions instead of being paid for in full every time
+    system=[{"type": "text", "text": SYSTEM, "cache_control": {"type": "ephemeral"}}],
     output_config={"effort": "low"},
     cache_control={"type": "ephemeral"},  # reuses the repeated conversation at a discount
     betas=["server-side-fallback-2026-07-01"],

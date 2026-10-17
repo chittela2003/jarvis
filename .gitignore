@@ -8,3 +8,6 @@ models/
 voice_samples/
 voiceprint_old.npy
 jarvis.log
+evals/*/baseline/traces/
+evals/*/report.html
+evals/*/trajectory/

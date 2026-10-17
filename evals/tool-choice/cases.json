@@ -1,0 +1,313 @@
+[
+  {
+    "id": "open-spotify",
+    "tags": [
+      "open app"
+    ],
+    "prompt": "open spotify",
+    "expected": [
+      "open_app"
+    ]
+  },
+  {
+    "id": "launch-whatsapp",
+    "tags": [
+      "open app"
+    ],
+    "prompt": "launch whatsapp for me",
+    "expected": [
+      "open_app"
+    ]
+  },
+  {
+    "id": "open-calculator",
+    "tags": [
+      "open app"
+    ],
+    "prompt": "can you open the calculator",
+    "expected": [
+      "open_app"
+    ]
+  },
+  {
+    "id": "play-arijit",
+    "tags": [
+      "youtube"
+    ],
+    "prompt": "play arijit singh songs",
+    "expected": [
+      "search_youtube",
+      "open_in_chrome"
+    ]
+  },
+  {
+    "id": "watch-cricket",
+    "tags": [
+      "youtube"
+    ],
+    "prompt": "I want to watch cricket highlights",
+    "expected": [
+      "search_youtube",
+      "open_in_chrome"
+    ]
+  },
+  {
+    "id": "google-recipe",
+    "tags": [
+      "google"
+    ],
+    "prompt": "google a biryani recipe",
+    "expected": [
+      "search_google"
+    ]
+  },
+  {
+    "id": "google-macbook",
+    "tags": [
+      "google"
+    ],
+    "prompt": "show me google results for macbook air price",
+    "expected": [
+      "search_google"
+    ]
+  },
+  {
+    "id": "open-github",
+    "tags": [
+      "website"
+    ],
+    "prompt": "open github.com",
+    "expected": [
+      "open_in_chrome"
+    ]
+  },
+  {
+    "id": "open-linkedin",
+    "tags": [
+      "website"
+    ],
+    "prompt": "take me to the linkedin website",
+    "expected": [
+      "open_in_chrome"
+    ]
+  },
+  {
+    "id": "world-cup",
+    "tags": [
+      "web search"
+    ],
+    "prompt": "who won the most recent FIFA World Cup final?",
+    "expected": [
+      "web_search",
+      "web_fetch"
+    ]
+  },
+  {
+    "id": "python-version",
+    "tags": [
+      "web search"
+    ],
+    "prompt": "what is the latest version of Python?",
+    "expected": [
+      "web_search",
+      "web_fetch"
+    ]
+  },
+  {
+    "id": "weather",
+    "tags": [
+      "web search"
+    ],
+    "prompt": "what's the weather in Hyderabad right now?",
+    "expected": [
+      "web_search",
+      "web_fetch"
+    ]
+  },
+  {
+    "id": "note-todo",
+    "tags": [
+      "write note"
+    ],
+    "prompt": "write a note called todo.txt that says finish the eval",
+    "expected": [
+      "write_note"
+    ]
+  },
+  {
+    "id": "note-ideas",
+    "tags": [
+      "write note"
+    ],
+    "prompt": "save a note named ideas.txt: add a wake word to jarvis",
+    "expected": [
+      "write_note"
+    ]
+  },
+  {
+    "id": "delete-shopping",
+    "tags": [
+      "delete note"
+    ],
+    "prompt": "delete my shopping note",
+    "expected": [
+      "delete_note"
+    ]
+  },
+  {
+    "id": "delete-ideas",
+    "tags": [
+      "delete note"
+    ],
+    "prompt": "get rid of the note ideas.txt",
+    "expected": [
+      "delete_note"
+    ]
+  },
+  {
+    "id": "volume-down",
+    "tags": [
+      "volume"
+    ],
+    "prompt": "turn the volume down to 20",
+    "expected": [
+      "set_volume"
+    ]
+  },
+  {
+    "id": "volume-up",
+    "tags": [
+      "volume"
+    ],
+    "prompt": "make it louder, put the volume at 80",
+    "expected": [
+      "set_volume"
+    ]
+  },
+  {
+    "id": "remember-sister",
+    "tags": [
+      "remember"
+    ],
+    "prompt": "remember that my sister's name is Priya",
+    "expected": [
+      "remember"
+    ]
+  },
+  {
+    "id": "remember-birthday",
+    "tags": [
+      "remember"
+    ],
+    "prompt": "my birthday is on the 5th of March, don't forget it",
+    "expected": [
+      "remember"
+    ]
+  },
+  {
+    "id": "recall-food",
+    "tags": [
+      "recall"
+    ],
+    "prompt": "what's my favourite food?",
+    "expected": [
+      "recall"
+    ]
+  },
+  {
+    "id": "recall-me",
+    "tags": [
+      "recall"
+    ],
+    "prompt": "what do you know about me?",
+    "expected": [
+      "recall"
+    ]
+  },
+  {
+    "id": "mute",
+    "tags": [
+      "settings"
+    ],
+    "prompt": "mute the sound",
+    "expected": [
+      "set_mute",
+      "set_volume"
+    ]
+  },
+  {
+    "id": "dark-mode",
+    "tags": [
+      "settings"
+    ],
+    "prompt": "switch to dark mode",
+    "expected": [
+      "set_dark_mode"
+    ]
+  },
+  {
+    "id": "wifi-on",
+    "tags": [
+      "settings"
+    ],
+    "prompt": "turn the wifi on",
+    "expected": [
+      "set_wifi"
+    ]
+  },
+  {
+    "id": "bluetooth-on",
+    "tags": [
+      "settings"
+    ],
+    "prompt": "turn on bluetooth",
+    "expected": [
+      "set_bluetooth"
+    ]
+  },
+  {
+    "id": "screen-off",
+    "tags": [
+      "settings"
+    ],
+    "prompt": "turn the screen off",
+    "expected": [
+      "sleep_display"
+    ]
+  },
+  {
+    "id": "brightness",
+    "tags": [
+      "settings"
+    ],
+    "prompt": "lower the screen brightness",
+    "expected": [
+      "list_shortcuts",
+      "run_shortcut"
+    ]
+  },
+  {
+    "id": "math",
+    "tags": [
+      "no tool"
+    ],
+    "prompt": "what is 7 times 8?",
+    "expected": []
+  },
+  {
+    "id": "joke",
+    "tags": [
+      "no tool"
+    ],
+    "prompt": "tell me a joke",
+    "expected": []
+  },
+  {
+    "id": "explain-api",
+    "tags": [
+      "no tool"
+    ],
+    "prompt": "explain what an API is in one sentence",
+    "expected": []
+  }
+]

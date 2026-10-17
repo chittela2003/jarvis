@@ -1,0 +1,10 @@
+{
+  "metrics": [
+    {"id": "correct_tool", "label": "Right tool", "kind": "binary"}
+  ],
+  "perf_fields": [
+    {"id": "latency_s", "label": "Seconds", "unit": "s"},
+    {"id": "tool_calls", "label": "Tool calls"},
+    {"id": "web_searches", "label": "Searches"}
+  ]
+}

@@ -63,6 +63,13 @@ Things I found by testing rather than guessing:
 - **A bad enrollment breaks the voice lock.** My first voiceprint, made from 5-second clips that were mostly silence, matched my real voice only 33-43%. Rebuilding it from real "Hey Jarvis" clips raised that to 76-89%, while other voices stayed around 20%.
 - **macOS blocks the microphone for background processes** unless they start from an app that already has permission, so background mode starts Jarvis from Terminal and then detaches it.
 
+## Measuring it
+
+`eval_tools.py` is an automated test: it sends 31 requests (`evals/tool-choice/cases.json`) to Claude with Jarvis's real instructions and tools, and checks which tool Claude picks. The tools are never actually run. It includes requests that need **no** tool (a joke, a maths question), so a Jarvis that used tools for everything would fail. Before trusting it, I checked the test itself: a fake "perfect" model scored 100% and a fake "never uses tools" model scored 12%.
+
+- **Result: 31/31** requests got the right tool (on Claude Opus 5.5). Per-case results are in `evals/tool-choice/baseline/results.jsonl`.
+- **It also found a cost bug.** Every request was paying full price for the same ~8,700 tokens of instructions and tool descriptions; none were read from the prompt cache. Adding a cache marker after the instructions cut the cost of a command from about **$0.044 to $0.002–0.003** (measured on 3 real requests), roughly 94% cheaper. The first command after about 5 idle minutes still pays the full price once.
+
 Known limits: a very similar voice or a recording of me can pass the voice lock, and claps are not voice-checked (but the command that follows is).
 
 ## Run it yourself
@@ -89,5 +96,5 @@ Bluetooth control also needs `brew install blueutil`.
 - [x] Long-term memory (embeddings and vector search)
 - [x] Confirmation before risky actions
 - [x] Wake word, voice lock and clap control
-- [ ] Automated accuracy test (does Claude pick the right tool?)
+- [x] Automated accuracy test (31/31 right tool) and a prompt-caching cost fix
 - [ ] Demo video
